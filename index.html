@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Disks</title>
+<style>
+  :root { --fondo:#111; --texto:#f3efe6; --suave:#a8a294; --color:#d4a24c; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { min-height:100vh; background:var(--fondo); color:var(--texto);
+         font-family:-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         display:flex; flex-direction:column; align-items:center; padding:48px 24px 32px; }
+  .marca { font-size:13px; letter-spacing:.25em; text-transform:uppercase; color:var(--suave); }
+  .disco { width:min(64vw,260px); aspect-ratio:1; border-radius:50%; margin:36px 0 28px; position:relative;
+           background:repeating-radial-gradient(circle, #1b1b1b 0 2px, #0a0a0a 2px 4px);
+           box-shadow:0 10px 40px rgba(0,0,0,.6); animation:girar 6s linear infinite; }
+  .disco::after { content:""; position:absolute; inset:33%; border-radius:50%; background:var(--color); }
+  .disco::before { content:""; position:absolute; inset:48.5%; border-radius:50%; background:var(--fondo); z-index:1; }
+  @keyframes girar { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .disco { animation:none; } }
+  h1 { font-size:28px; font-weight:700; text-align:center; line-height:1.2; }
+  .sub { color:var(--suave); margin-top:8px; text-align:center; font-size:15px; }
+  .botones { width:100%; max-width:340px; display:flex; flex-direction:column; gap:12px; margin-top:32px; }
+  .boton { display:block; text-align:center; text-decoration:none; font-weight:700; font-size:17px;
+           padding:16px; border-radius:999px; color:#fff; }
+  .spotify { background:#1db954; color:#000; }
+  .youtube { background:#e62117; }
+  .lista { width:100%; max-width:340px; display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:32px; }
+  .lista a { display:block; padding:14px 10px; border:1px solid #333; border-radius:12px; text-align:center;
+             color:var(--texto); text-decoration:none; font-size:14px; }
+  footer { margin-top:auto; padding-top:40px; font-size:13px; color:var(--suave); }
+  footer a { color:var(--suave); }
+</style>
+</head>
+<body>
+  <div class="marca">3D Disks</div>
+  <div class="disco" aria-hidden="true"></div>
+  <h1 id="titulo"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="botones" id="botones"></div>
+  <div class="lista" id="lista"></div>
+  <footer><a href="https://instagram.com/3d.disks">@3d.disks</a></footer>
+
+<script>
+  // ── EDITÁ SOLO ESTO ─────────────────────────────────────────────
+  // Pegá cada link entre las comillas. Si una playlist todavía no
+  // está en una plataforma, dejá "" y ese botón no aparece.
+  // El link de cada disco es: https://3ddisks.github.io/?p=CLAVE
+  const PLAYLISTS = {
+    "navidad":     { nombre: "Navidad / Año Nuevo", color: "#c0392b", spotify: "", youtube: "" },
+    "70s":         { nombre: "70s",                 color: "#e67e22", spotify: "", youtube: "" },
+    "80s":         { nombre: "80s",                 color: "#e84393", spotify: "", youtube: "" },
+    "90s":         { nombre: "90s",                 color: "#6c5ce7", spotify: "", youtube: "" },
+    "retro":       { nombre: "Retro",               color: "#d4a24c", spotify: "", youtube: "" },
+    "pop":         { nombre: "Pop",                 color: "#fd79a8", spotify: "", youtube: "" },
+    "relax":       { nombre: "Relax",               color: "#74b9ff", spotify: "", youtube: "" },
+    "alternative": { nombre: "Alternative",         color: "#00b894", spotify: "", youtube: "" },
+    "indie-folk":  { nombre: "Indie / Folk",        color: "#a3845b", spotify: "", youtube: "" },
+    "ruta":        { nombre: "Para la ruta",        color: "#fdcb6e", spotify: "", youtube: "" }
+  };
+  // ────────────────────────────────────────────────────────────────
+
+  const clave = new URLSearchParams(location.search).get("p");
+  const pl = PLAYLISTS[clave];
+  const titulo = document.getElementById("titulo");
+  const sub = document.getElementById("sub");
+
+  if (pl) {
+    document.documentElement.style.setProperty("--color", pl.color);
+    document.title = pl.nombre + " · 3D Disks";
+    titulo.textContent = pl.nombre;
+    const botones = document.getElementById("botones");
+    [["spotify", "Escuchar en Spotify"], ["youtube", "Escuchar en YouTube"]].forEach(([plat, texto]) => {
+      if (!pl[plat]) return;
+      const a = document.createElement("a");
+      a.className = "boton " + plat;
+      a.href = pl[plat];
+      a.textContent = texto;
+      botones.appendChild(a);
+    });
+    sub.textContent = botones.children.length ? "Elegí dónde escucharla" : "Esta playlist está en camino 🎶";
+  } else {
+    titulo.textContent = "Nuestros discos";
+    sub.textContent = "Elegí una playlist";
+    const lista = document.getElementById("lista");
+    Object.entries(PLAYLISTS).forEach(([k, v]) => {
+      const a = document.createElement("a");
+      a.href = "?p=" + k;
+      a.textContent = v.nombre;
+      a.style.borderColor = v.color;
+      lista.appendChild(a);
+    });
+  }
+</script>
+</body>
+</html>
