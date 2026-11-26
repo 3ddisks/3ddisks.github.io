@@ -16,6 +16,12 @@
   .disco { width:min(64vw,260px); aspect-ratio:1; border-radius:50%; margin:36px 0 28px;
            background:var(--logo-disco) center/contain no-repeat;
            box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 0 1px #2a2a2a; animation:girar 6s linear infinite; }
+  /* En la página de cada playlist: vinilo negro con la etiqueta de esa playlist en el centro
+     (etiqueta 38 mm sobre disco de 84 mm = 45 %). Las imágenes están en la carpeta etiquetas/ */
+  .disco.vinilo { background:
+      var(--etiqueta) center/45.2% no-repeat,
+      radial-gradient(circle, transparent 23%, rgba(255,255,255,.05) 23.5%, transparent 24.5%),
+      repeating-radial-gradient(circle, #1a1a1a 0 1px, #0b0b0b 1px 3px); }
   @keyframes girar { to { transform:rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .disco { animation:none; } }
   h1 { font-size:28px; font-weight:700; text-align:center; line-height:1.2; }
@@ -46,6 +52,7 @@
   // Pegá cada link entre las comillas. Si una playlist todavía no
   // está en una plataforma, dejá "" y ese botón no aparece.
   // El link de cada disco es: https://3ddisks.github.io/?p=CLAVE
+  // La etiqueta que gira sale de etiquetas/CLAVE.webp (misma clave).
   const PLAYLISTS = {
     "navidad":     { nombre: "Navidad / Año Nuevo", color: "#c0392b", spotify: "", youtube: "" },
     "70s":         { nombre: "70s",                 color: "#e67e22", spotify: "", youtube: "" },
@@ -65,7 +72,7 @@
     "salsa":       { nombre: "Salsa",               color: "#ff6a3d", spotify: "", youtube: "" },
     "folklore":    { nombre: "Folklore",            color: "#c0392b", spotify: "", youtube: "" },
     "cumbia":       { nombre: "Cumbia",                color: "#ff2d8a", spotify: "", youtube: "" },
-    "cuarteto":     { nombre: "Cuarteto",              color: "#ffd23f", spotify: "", youtube: "" },
+    "cuarteto":     { nombre: "Cuarteto",              color: "#14a396", spotify: "", youtube: "" },
     "tango":        { nombre: "Tango",                 color: "#d4a24c", spotify: "", youtube: "" },
     "romanticos-en":{ nombre: "Románticos en inglés",  color: "#ff5c7a", spotify: "", youtube: "" },
     "romanticos-es":{ nombre: "Románticos en español", color: "#e8364f", spotify: "", youtube: "" },
@@ -82,6 +89,14 @@
   if (pl) {
     document.documentElement.style.setProperty("--color", pl.color);
     document.title = pl.nombre + " · 3D Disks";
+    // Etiqueta del disco: si la imagen no carga, queda el disco del logo
+    const img = new Image();
+    img.onload = () => {
+      const disco = document.querySelector(".disco");
+      disco.style.setProperty("--etiqueta", 'url("' + img.src + '")');
+      disco.classList.add("vinilo");
+    };
+    img.src = "etiquetas/" + clave + ".webp";
     titulo.textContent = pl.nombre;
     const botones = document.getElementById("botones");
     [["spotify", "Escuchar en Spotify"], ["youtube", "Escuchar en YouTube"]].forEach(([plat, texto]) => {
